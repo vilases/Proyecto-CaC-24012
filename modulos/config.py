@@ -1,3 +1,5 @@
+# Se crea una constante (diccionario) con los datos para la conexion con la API de Google Drive
+
 CON={
      'SCOPES':['https://www.googleapis.com/auth/spreadsheets'],
      'KEY':'proyecto-cac-24012-f9cb5f939850.json',
