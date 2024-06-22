@@ -127,12 +127,3 @@ def quartil(lista,num=1):
 
     
     
-print (max(lista))
-print (min(lista))
-print (media(lista))
-print(mediana(lista))      
-print(dst(lista))
-print (rango(lista))
-print(quartil(lista,1))
-print(quartil(lista,2))
-print(quartil(lista,3))

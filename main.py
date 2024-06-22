@@ -2,6 +2,7 @@
    Importacion de modulo obtenerDatos para cargar el sheet de Goggle Drive
    Importacion de matplotlib para los graficos
 '''
+import numpy as np
 import pandas as pd
 from modulos.obtenerDatos import cargar_sheet
 from modulos.consolidar import modTypes , mergeData
@@ -54,21 +55,47 @@ print(transacciones.sort_values(by='Transacciones',ascending=False))
 print('*'*40)
 print()
 
+plt.figure(figsize=(10,6))
+plt.bar(transacciones['Pais'],transacciones['Transacciones'], color='skyblue')
+plt.xlabel('País')
+plt.ylabel('Transacciones')
+plt.title('Transacciones por país')
+plt.show()
+
 print('2c) Ganancias Reales por País')
 print('='*25)
 ganancia_r_pais= consolidado.groupby('country')['revenue'].sum().reset_index()
-ganancia_r_pais=ganancia_r_pais.rename(columns={'country':'Pais','revenue':'Ganancia_Real'})
-print(ganancia_r_pais.sort_values(by='Ganancia_Real',ascending=False))
+ganancia_r_pais=ganancia_r_pais.rename(columns={'country':'Pais','revenue':'Ganancia Real'})
+print(ganancia_r_pais.sort_values(by='Ganancia Real',ascending=False))
 print('*'*40)
 print()
+
+plt.figure(figsize=(10,6))
+plt.bar(ganancia_r_pais['Pais'],ganancia_r_pais['Ganancia Real'], color='skyblue')
+plt.xlabel('País')
+plt.ylabel('Ganancia Real')
+plt.title('Ganancia Real por país')
+plt.show()
 
 print('3) Ganancias Reales por Mes')
 print('='*25)
 ganancia_r_mes= consolidado.groupby('mes')['revenue'].sum().reset_index()
-ganancia_r_mes=ganancia_r_mes.rename(columns={'mes':'Mes','revenue':'Ganancia_Real'})
+ganancia_desc = ganancia_r_mes.loc[ganancia_r_mes['mes'] == '_Desconocido', 'revenue'].values[0]
+
+ganancia_r_mes=ganancia_r_mes.rename(columns={'mes':'Mes','revenue':'Ganancia Real'})
+ganancia_r_mes=ganancia_r_mes[ganancia_r_mes['Mes'] != '_Desconocido']
 print(ganancia_r_mes.sort_values(by='Mes'))
+print (f'Se encuentra un valor de ganancia sin fecha el cual asciende a la cantidad de: {ganancia_desc}')
 print('*'*40)
 print()
+
+plt.figure(figsize=(10,6))
+plt.bar(ganancia_r_mes['Mes'],ganancia_r_mes['Ganancia Real'], color='skyblue')
+plt.xlabel('Mes')
+plt.ylabel('Ganancia Real')
+plt.title('Ganancia Real por mes')
+plt.ylim(1000000000000)
+plt.show()
 
 print('4) Ganancias Reales vs Inversiones por Pais')
 print('='*40)
@@ -77,6 +104,38 @@ ganancia_r_vs_inv=ganancia_r_vs_inv.rename(columns={'country':'Pais','revenue':'
 print(ganancia_r_vs_inv.sort_values(by='Inversion',ascending=False))
 print('*'*60)
 print()
+
+plt.figure(figsize=(10,6))
+
+ganancia_sorted= ganancia_r_pais.sort_values(by='Ganancia Real')
+
+plt.plot (ganancia_sorted['Pais'],ganancia_sorted['Ganancia Real'],marker= 'o', color='blue', label = 'Ganancia Real')
+
+inv_pais= consolidado.groupby('country')['investment'].max().reset_index()
+inv_pais_sorted=inv_pais.sort_values(by='investment')
+inv_pais_sorted=inv_pais.rename(columns={'country':'Pais','investment':'Inversion'})
+
+plt.plot (inv_pais_sorted['Pais'],inv_pais_sorted['Inversion'],marker= '*', color='red', label = 'Inversion')
+
+plt.xlabel('Paises')
+plt.ylabel('Valores')
+
+plt.title('Ganancia real vs Inversiones')
+
+plt.show()
+
+relacion= pd.merge (inv_pais_sorted,ganancia_sorted,on='Pais')
+
+relacion['ROI']=(relacion['Ganancia Real']/relacion['Inversion']).round(2)
+
+plt.figure(figsize=(10,6))
+plt.bar(relacion['Pais'],relacion['ROI'], color='blue')
+plt.xlabel('Pais')
+plt.ylabel('ROI')
+plt.title('Ganancia Real vs Inversiones')
+
+plt.show()
+
 print('''5) Recomendamos realizar una auditoría en las sucursales de:
 - Paraguay porque observamos que la ganancia real generada por nuestras sucursales en Paraguay es significativamente baja en comparación 
       con la inversión realizada. Esto podría deberse a ineficiencias operativas, falta de controles internos efectivos o incluso 
@@ -87,41 +146,5 @@ print('''5) Recomendamos realizar una auditoría en las sucursales de:
 - Uruguay porque su relación ganancia neta-inversión alta (12,81) indica que la empresa está generando una ganancia significativa en relación 
       con la cantidad de recursos invertidos. Esto podría ser positivo y sugerir una gestión eficiente de los activos y operaciones, la auditoría 
       nos permitiría conocer el contexto y el modelo de gestión que se podría aplicar a otros países. ''')
-
-plt.figure(figsize=(12,6))
-
-plt.subplot(1,2,1)
-plt.bar(transacciones['Pais'],transacciones['Transacciones'],color='skyblue')
-plt.title('Transacciones por País')
-plt.xlabel('País')
-plt.ylabel('Transacciones')
-
-plt.subplot(1,2,2)
-plt.bar(ganancia_r_pais['Pais'],ganancia_r_pais['Ganancia_Real'],color='lightgreen')
-plt.title('Ganancia Real por País')
-plt.xlabel('País')
-plt.ylabel('Ganancia Real')
-
-'''
-plt.subplot(2,1,1)
-plt.bar(ganancia_r_mes['Mes'],ganancia_r_mes['Ganancia_Real'],color='magenta')
-plt.title('Ganancia Real por Mes')
-plt.xlabel('Mes')
-plt.ylabel('Ganancia Real')
-
-plt.subplot(2,2,2)
-plt.plot(ganancia_r_vs_inv['Pais'],ganancia_r_vs_inv['Ganancia_Real'], marker='o', color='red', label='Revenue')
-
-plt.twinx()
-plt.plot(ganancia_r_vs_inv['Pais'],ganancia_r_vs_inv['Ganancia_Real'], marker='o', color='blue', label='Revenue')
-
-plt.title('Ganancia Real vs Impuestos por Pais')
-plt.xlabel('Pais')
-plt.ylabel('Valores')
-
-'''
-plt.tight_layout()
-plt.show()
-
 
 

@@ -18,9 +18,8 @@ def cargar_sheet(rango):
 
     result = sheet.values().get(spreadsheetId=CON['SPREADSHEET_ID'],range=rango).execute() # Carga en el objeto los datos de la sheet de Google pedido con la constante
     consolidado=result.get('values',[]) # Guarda los valores en una lista que es lo que retorna la funcion
-    # print (consolidado)
+    #print (consolidado)
 
     return consolidado
-
 
 # \
