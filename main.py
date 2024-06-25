@@ -48,6 +48,8 @@ print('*'*40)
 print()
 print('2b) Transacciones por País')
 print('='*21)
+
+# Se hace el df de transacciones agrupando por pais
 transacciones= consolidado.groupby('country')['transactions'].sum().reset_index()
 
 transacciones=transacciones.rename(columns={'country':'Pais','transactions':'Transacciones'})
@@ -55,6 +57,7 @@ print(transacciones.sort_values(by='Transacciones',ascending=False))
 print('*'*40)
 print()
 
+# Se hace el grafico usando matplotlib con el df anterior 
 plt.figure(figsize=(10,6))
 plt.bar(transacciones['Pais'],transacciones['Transacciones'], color='skyblue')
 plt.xlabel('País')
@@ -70,6 +73,7 @@ print(ganancia_r_pais.sort_values(by='Ganancia Real',ascending=False))
 print('*'*40)
 print()
 
+# Se hace el grafico usando matplotlib con el df anterior 
 plt.figure(figsize=(10,6))
 plt.bar(ganancia_r_pais['Pais'],ganancia_r_pais['Ganancia Real'], color='skyblue')
 plt.xlabel('País')
@@ -89,6 +93,7 @@ print (f'Se encuentra un valor de ganancia sin fecha el cual asciende a la canti
 print('*'*40)
 print()
 
+# Se hace el grafico usando matplotlib con el df anterior 
 plt.figure(figsize=(10,6))
 plt.bar(ganancia_r_mes['Mes'],ganancia_r_mes['Ganancia Real'], color='skyblue')
 plt.xlabel('Mes')
@@ -107,14 +112,18 @@ print()
 
 plt.figure(figsize=(10,6))
 
+#Utilizando el df ya creado de ganancia real se acomoda de menor a mayor
 ganancia_sorted= ganancia_r_pais.sort_values(by='Ganancia Real')
 
+#Se hace el grafico con el df anterior
 plt.plot (ganancia_sorted['Pais'],ganancia_sorted['Ganancia Real'],marker= 'o', color='blue', label = 'Ganancia Real')
 
+# Se genera el df con las inversiones por pais usando los maximos paa cada uno y uego se acomoda de menor a mayor
 inv_pais= consolidado.groupby('country')['investment'].max().reset_index()
 inv_pais_sorted=inv_pais.sort_values(by='investment')
 inv_pais_sorted=inv_pais.rename(columns={'country':'Pais','investment':'Inversion'})
 
+# Se crea el grafico con el df anterior
 plt.plot (inv_pais_sorted['Pais'],inv_pais_sorted['Inversion'],marker= '*', color='red', label = 'Inversion')
 
 plt.xlabel('Paises')
